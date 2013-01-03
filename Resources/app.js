@@ -1,52 +1,53 @@
-var MASlidingMenu = require('/lib/MASlidingMenu');
-var HomeView = require('/ui/HomeView');
-var SampleView = require('/ui/SampleView');
-var MenuView = require('/ui/MenuView');
+/*jslint maxerr:1000 */
 
-var home = new HomeView();
+//Create our application namespace
+var my = {menu:{},views:{}};
+//Import our module
+my.slidingMenu = require('MASlidingMenu');
 
-var settings = new SampleView();
+my.sampleView = require('sample_views');
+my.views = {
+	home : my.sampleView.HomeView(),
+	about : my.sampleView.AboutView()
+};
 
 // Each row with a view property when clicked will change to that view (any view works except tabgroups and windows)
 // If the row does not have a view property, but the switch event still fires
 var data = [
-	{ title:'Home', hasDetail:true, view: home },
-	{ title:'Sample', hasDetail:true, view: settings },
+	{ title:'Home', hasDetail:true, view: my.views.home },
+	{ title:'About', hasDetail:true, view: my.views.about },
 	{ title:'Button' }
 ];
 
-var menu = new MenuView({
-	rowData: data
-});
-
-var slidingMenu = new MASlidingMenu({
-	left: menu, // the menu... only accepts a tableview
-	draggable: true // set false to only use the API to open / close
-});
-slidingMenu.open();
+my.slidingMenu.addMenuItems(data).open();
 
 // event fired when user selects a view from the nav
-slidingMenu.addEventListener('buttonclick', function(e) {
+my.slidingMenu.addEventListener('buttonclick', function(e) {
 	if (e.index === 2) {
 		alert('You clicked on Button');
 	}
 });
 
 // event fired when user selects a view from the nav
-slidingMenu.addEventListener('switch', function(e) {
-	//alert(e.menuRow);
-	//alert(e.index);
+my.slidingMenu.addEventListener('switch', function(e) {
+	// alert(e.menuRow);
+	// alert(e.index);
 	//alert(e.view); // This is the new view your switching to
 });
 
 // event fired while user is dragging the view to expose the menu
-slidingMenu.addEventListener('sliding', function(e) {
+my.slidingMenu.addEventListener('sliding', function(e) {
 	//alert(e.distance);
 });
 
-//Expose / close the menu programaticly
-	//slidingMenu.slideView('left');
-	//slidingMenu.slideView('view');
+Ti.App.addEventListener('app:open_menu',function(e){
+	my.slidingMenu.expose();	
+});
 
-// Access the currently displayed view
-	//slidingMenu.activeView();
+Ti.App.addEventListener('app:toggle_menu',function(e){
+	my.slidingMenu.toggle();	
+});
+
+Ti.App.addEventListener('app:close_menu',function(e){
+	my.slidingMenu.close();	
+});
