@@ -1,4 +1,6 @@
 /*jslint maxerr:1000 */
+//Get the app root to avoid path issues 
+var _appRoot = Ti.Filesystem.resourcesDirectory;
 
 var _objects = {
 	leftView : null,
@@ -237,7 +239,7 @@ var internal = {
 	},	
 	changeView : function(newView) {
 		if(_objects.activeView === newView){
-			exports.close();
+			exports.hide();
 			return;
 		}		
 		if (_session.isAndroid) {
@@ -256,6 +258,7 @@ var internal = {
 		                eventHelpers.removeEvents();
 		            }
 		            _objects.activeView.hide();
+		            exports.fireEvent('menuClosed', {});
 		            _objects.activeView = newView;
 		            _session.current = 'view';
 		            _objects.activeView.show();
@@ -266,6 +269,8 @@ var internal = {
 		            _objects.activeView.animate({
 		                left:0,
 		                duration: _sessionConfig.duration.change_in
+		            },function(f){
+		            	exports.fireEvent('menuOpened', {});
 		            });
 		        });
 	        } else {
@@ -279,6 +284,7 @@ var internal = {
 	            };
 	            
 	            newView.hide();
+
 	            newView.animate({
 	            	transform: _objects.twoD.translate(_session.platformWidth,0),
 	            	duration: 0.1
@@ -295,6 +301,7 @@ var internal = {
 		                eventHelpers.removeEvents();
 		            }
 		            _objects.activeView.hide();
+		            exports.fireEvent('menuClosed', {});
 		            _objects.activeView = newView;
 		            _session.current = 'view';
 		            _objects.activeView.show();
@@ -305,6 +312,8 @@ var internal = {
 		            _objects.activeView.animate({
 		                transform: _objects.twoD.translate(0, 0),
 		                duration: _sessionConfig.duration.change_in
+		            },function(f){
+		            	exports.fireEvent('menuOpened', {});
 		            });
 		        });
 	        } else {
@@ -344,9 +353,9 @@ exports.isOpen=function(){
 };
 exports.toggle = function(){
 	 if(exports.isOpen()){
-		 exports.close();
+		 return exports.hide();
 	 }else{
-		 exports.expose();
+		 return exports.expose();
 	}
 };
 
@@ -357,7 +366,7 @@ exports.addMenuItems = function(data){
 		var row = Ti.UI.createTableViewRow({
 			height:44, navView: rowData.view,
 			backgroundColor:'transparent',
-			backgroundImage:'/images/row_bg.png'
+			backgroundImage:_appRoot + 'SlideOutMenu/Images/row_bg.png'
 		});
 	
 		var title = Ti.UI.createLabel({
@@ -377,7 +386,7 @@ exports.addMenuItems = function(data){
 		if(rowData.hasDetail){
 			var detail = Ti.UI.createImageView({
 				right:90, width:8, height:13,
-				image:'/Images/arrow.png'
+				image: _appRoot + 'SlideOutMenu/Images/arrow.png'
 			});
 			row.add(detail);
 		}
@@ -386,7 +395,7 @@ exports.addMenuItems = function(data){
 	};	
 
 	_objects.leftView = Ti.UI.createTableView({
-		backgroundImage:'/Images/table_bg.png',
+		backgroundImage:_appRoot + 'SlideOutMenu/Images/table_bg.png',
 		separatorStyle:Ti.UI.iPhone.TableViewSeparatorStyle.NONE
 	});
 
@@ -418,11 +427,15 @@ exports.expose=function(){
 	        _objects.activeView.animate({
 			     left: maxLeft,
 			     duration: _sessionConfig.duration.swipe
+	        },function(f){
+	        	exports.fireEvent('menuOpened', {});
 	        });
 		}else{
 		    _objects.activeView.animate({	    	
 		        transform: _objects.twoD.translate(260, 0),
 		        duration: _sessionConfig.duration.bounce
+		    },function(f){
+		    	exports.fireEvent('menuOpened', {});
 		    });				
 		}
 		internal.onCurrentChanged();	
@@ -430,18 +443,22 @@ exports.expose=function(){
     return exports;
 };
 
-exports.close=function(){
+exports.hide=function(){
 	if(_objects.activeView!==null){
 		_session.current = 'view';
 		if(_session.isAndroid){		            
 	        _objects.activeView.animate({
 	            left: 0,
 	            duration: _sessionConfig.duration.swipe
+	        },function(f){
+	        	exports.fireEvent('menuClosed', {});
 	        });	
 		}else{
 		    _objects.activeView.animate({
 		        transform: _objects.twoD.translate(0, 0),
 		        duration: _sessionConfig.duration.bounce
+		    },function(f){
+		    	exports.fireEvent('menuClosed', {});
 		    });		
 	   }
 	   internal.onCurrentChanged();

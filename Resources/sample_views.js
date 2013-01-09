@@ -1,5 +1,5 @@
 /*jslint maxerr:1000 */
-var menu = require('MASlidingMenu');
+var menu = require('./SlideOutMenu/MASlidingMenu');
 var _isAndroid = Ti.Platform.osname === 'android';
 
 function createiOSToolbar(title){
@@ -68,42 +68,21 @@ function createAndroidToolbar(title){
 	return bar;	
 };
 
-exports.HomeView = function(){
-    var view = new menu.createMenuView({
-        backgroundColor:'blue'
-    });
-    view.add(Ti.UI.createLabel({
-    	text:'Home View', color:'#fff',
-    	height:24, width:100,
-    	textAlign:'center', touchEnabled:false
-    }));
-		
-	view.addEventListener('dblclick',function(e){
-		Ti.App.fireEvent('app:close_menu');							
-	});
-	
-	view.add(((_isAndroid)? createAndroidToolbar('Home') :
-			  createiOSToolbar('Home')));
-	
-    return view;
-};
-
-
-exports.AboutView = function(args){
+exports.placeholderView = function(args){
 	var view = new menu.createMenuView({
-		backgroundColor:'purple'
+		backgroundColor:args.backgroundColor
 	});
     
     view.add(Ti.UI.createLabel({
-    	text:'About View',
+    	text: args.title + ' View',
     	color:'#000',
     	height:24,
     	width:100,
     	textAlign:'center', touchEnabled:false
     }));
 		
-	view.add(((_isAndroid)? createAndroidToolbar('About') :
-			  createiOSToolbar('About')));
+	view.add(((_isAndroid)? createAndroidToolbar(args.title) :
+			  createiOSToolbar(args.title)));
 	
 	view.addEventListener('dblclick',function(e){
 		Ti.App.fireEvent('app:close_menu');							
