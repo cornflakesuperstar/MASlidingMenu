@@ -41,12 +41,28 @@ var _session = {
     }	
 };
 
+function setSizes(){
+  // set the size after we know what the size is. this should cover orientation too
+  _session.half = {
+      width: _objects.menuWin.rect.width / 2,
+      height: _objects.menuWin.rect.height / 2
+  };
+}
+
+if (Ti.Platform.osname == 'ipad') {
+  // Re-render layout when orientation changes
+  Ti.Gesture.addEventListener('orientationchange', function(e){
+    _objects.activeView.left = 0;
+    _objects.activeView.width = _session.platformWidth = Ti.Platform.displayCaps.platformWidth;
+    setSizes();
+  });
+} else {
+  // Fix orientation on handheld devices
+  _objects.menuWin.orientationModes = [Titanium.UI.PORTRAIT];
+}
+
 _objects.menuWin.addEventListener('postlayout',function(e){
-	// set the size after we know what the size is. this should cover orientation too
-    _session.half = {
-        width: _objects.menuWin.rect.width / 2,
-        height: _objects.menuWin.rect.height / 2
-    };
+  setSizes();
 });
 
 //Extend an object with the properties from another 

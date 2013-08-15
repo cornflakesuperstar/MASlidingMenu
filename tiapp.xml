@@ -3,11 +3,11 @@
     <deployment-targets>
         <target device="mobileweb">false</target>
         <target device="iphone">true</target>
-        <target device="ipad">false</target>
+        <target device="ipad">true</target>
         <target device="android">true</target>
         <target device="blackberry">false</target>
     </deployment-targets>
-    <sdk-version>2.1.1.GA</sdk-version>
+    <sdk-version>3.1.1.GA</sdk-version>
     <id>com.mattapp.sliderview</id>
     <name>SliderViewExample</name>
     <version>1.0</version>
@@ -23,17 +23,20 @@
     <fullscreen>false</fullscreen>
     <navbar-hidden>false</navbar-hidden>
     <analytics>false</analytics>
-    <guid>323c49ad2d1344d687e948931ddfd945</guid>
+    <guid>ac15a3ce-edc0-4058-b68e-043ac2fe1188</guid>
+    <iphone>
+        <orientations device="iphone">
+            <orientation>Ti.UI.PORTRAIT</orientation>
+        </orientations>
+        <orientations device="ipad">
+            <orientation>Ti.UI.PORTRAIT</orientation>
+            <orientation>Ti.UI.UPSIDE_PORTRAIT</orientation>
+            <orientation>Ti.UI.LANDSCAPE_LEFT</orientation>
+            <orientation>Ti.UI.LANDSCAPE_RIGHT</orientation>
+        </orientations>
+    </iphone>
     <ios>
         <min-ios-ver>4.3</min-ios-ver>
-        <plist>
-            <dict>
-                <key>UISupportedInterfaceOrientations</key>
-                <array>
-                    <string>UIInterfaceOrientationPortrait</string>
-                </array>
-            </dict>
-        </plist>
     </ios>
     <android xmlns:android="http://schemas.android.com/apk/res/android">
         <manifest>
