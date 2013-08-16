@@ -26,6 +26,7 @@ var DEFAULT_CONFIG = {
 var _sessionConfig = DEFAULT_CONFIG;
 
 var _session = {
+  initialised: false,
 	isAndroid : Ti.Platform.osname === 'android',
 	platformWidth : Ti.Platform.displayCaps.platformWidth,
     ledge:null,
@@ -375,7 +376,7 @@ exports.toggle = function(){
 	}
 };
 
-exports.addMenuItems = function(data){
+exports.loadMenuItems = function(data){
 	var rows = [];
 		
 	function createTableViewRow(rowData){
@@ -493,6 +494,18 @@ exports.open = function(args) {
         throw "'left' property must be a Titanium Table view proxy... was:" + _objects.leftView.toString();
     }
 
+    // If this menu has previously been initialised, remove existing table rows so
+    // that we can rebuild them 
+    if(_session.initialised){
+      for(var view_index in _objects.views) {
+        var view = _objects.views[view_index];
+        if(view){
+          _objects.menuWin.remove(view);
+        }
+      }
+      _objects.views = [];
+    }
+
     // Here we will process the table rows just as if they were tabs in a tabgroup
     // Making sure we check all the table sections
     for(var i = 0; i < _objects.leftView.data.length; i++)
@@ -518,13 +531,13 @@ exports.open = function(args) {
 
                 _objects.views.push(View);
                 
-                if (!_objects.activeView) {
+                if (!_session.initialised && !_objects.activeView) {
 			        _objects.activeView = _objects.views[_objects.views.length-1]; // set the first view we can find
                 }
 
                 // Hide all but the first one... but add them to self so they load and reduce lag... just like ios tabgroup...
                 _objects.menuWin.add(View);
-                if(_objects.views.length > 1) {
+                if(_objects.views.length > 1 && View != _objects.activeView) {
                     View.visible = false;
                 }
 
@@ -533,6 +546,7 @@ exports.open = function(args) {
             }
         }
     }
+    _session.initialised = true;
 
     _session.ledge = _objects.activeView.width * 0.8,
     _session.threshold = _objects.activeView.width * 0.2,

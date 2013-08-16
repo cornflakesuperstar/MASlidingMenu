@@ -1,5 +1,8 @@
 /*jslint maxerr:1000 */
-
+/*
+var w = Ti.UI.createWindow({title: 'rootwin'});
+w.open();
+*/
 //Create our application namespace
 var my = {views:{}};
 //Import our module
@@ -10,7 +13,7 @@ my.views = {
 	home : my.sampleView.placeholderView({title:'Home',backgroundColor:'blue'}),
 	inbox : my.sampleView.placeholderView({title:'Home',backgroundColor:'green'}),
 	sales : my.sampleView.placeholderView({title:'Home',backgroundColor:'yellow'}),
-	customers : my.sampleView.placeholderView({title:'Home',backgroundColor:'blue'}),
+	customers : my.sampleView.placeholderView({title:'Home',backgroundColor:'orange'}),
 	about : my.sampleView.placeholderView({title:'About',backgroundColor:'purple'})	
 };
 
@@ -22,16 +25,24 @@ var menuData = [
 	{ title:'Sales', hasDetail:true, view: my.views.sales },
 	{ title:'Customers', hasDetail:true, view: my.views.customers },
 	{ title:'About', hasDetail:true, view: my.views.about },
+  { title:'Add Item' },
 	{ title:'Logout' }
 ];
 
-my.menu.addMenuItems(menuData).open();
+my.menu.loadMenuItems(menuData).open();
 
 // event fired when user selects a view from the nav
 my.menu.addEventListener('buttonclick', function(e) {
-	if (e.index === 2) {
-		alert('You clicked on Logout');
-	}
+  if(menuData[e.index].title == 'Logout'){
+    menuData.splice(e.index, 1);
+    my.menu.loadMenuItems(menuData).open();
+  } else if (menuData[e.index].title == 'Add Item') {
+    var title = 'option_' + menuData.length;
+    var view = my.sampleView.placeholderView({title: title,backgroundColor:'red'});
+    my.views[title] = view;
+    menuData[menuData.length] = { title: title, view: view };
+    my.menu.loadMenuItems(menuData).open();
+  }
 });
 
 // event fired when user selects a view from the nav
